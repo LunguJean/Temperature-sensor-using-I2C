@@ -73,3 +73,18 @@ Pentru modulul i2c_master am realizat o simulare totala a receptiei si transmite
 
 <img width="1316" height="778" alt="image" src="https://github.com/user-attachments/assets/36f93f68-e263-400a-8eb7-cbd8eebe54c6" />
 
+### Saptmana 5, miercuri
+
+In continuare am decis sa ma documentez despre senzorul de temperatura de pe Nexys A7, ADT7420. Adresa acestuia in I2C este 0x4B, iar datele despre temperatura sunt stocate in 2 registre de 8 biti ( pentru MSB avem 0x00 si pentru LSB 0x01 ). Din cei 16 biti, valoarea temperaturii este stocata in cei primii 13 biti de la stanga la dreapta. 
+
+Pentru a intelege operatia de citire am folosit urmatoarea schema:
+<img width="771" height="214" alt="image" src="https://github.com/user-attachments/assets/18801698-5878-44ea-9d91-05e62dbca954" />
+
+In imaginea atasata sunt prezentate operatia de citire a datelor de la senzor, impartita in 2 tranzactii. In prima tranzactie, master-ul genereaza conditia de START si transmite adresa la care se vrea sa se faca scrierea ( 0x4B ). Dupa primirea bitului de scriere si a semnalului de confirmare ACK din partea slave-ului, masterul transmite adresa registrului din care vrea sa citeasca date ( 0x00 ).Dupa confirmarea receptiei a octetului MSB, se transmite din nou ACK si masterul genereaza o noua conditie de START ( aici denumita repeated start ), eliberand magistrala pentru a trece la citire
+
+In a 2-a tranzactie, masterul retransmite adresa slave-ului impreuna cu bitul de citire READ. Dupa confirmare, incepe transmiterea datelor: primul octet transmis este MSB-ul, impreuna cu ACK dupa ce masterul receptioneaza, apoi LSB-ul urmat de semnalul NACK ce indica faptul ca masterul nu mai solicita alte date de la senzor. Comunicatia este ulterior incheiata prin STOP, iar cei 2 octeti sunt concatenati pentru obtinerea valorii complete a temperaturii.
+
+
+
+
+
