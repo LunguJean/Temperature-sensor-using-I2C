@@ -5,6 +5,7 @@ Implementați un master I2C în SystemVerilog, fără IP core-uri Xilinx. Master
 comunice cu senzorul de temperatură de pe placă, să citească periodic valoarea temperaturii și
 să o convertească în grade Celsius conform specificațiilor din datasheet-ul senzorului.
 
+### Saptamana 5, luni
 
 ## Rezolvare:
 
@@ -59,4 +60,16 @@ Modulul este implementat sub forma unui FSM cu mai multe stari:
 - STOP_HIGH - SCL->1, SDA ramane 0
 - STOP_DONE - SDA->1 si SCL ramane 1, rezultand conditia de stop
 - DONE - starea de finalizare, semnal activat pe un singur ciclu de ceas, semnalul busy e dezactivat si se revine in starea IDLE
+
+
+
+### Saptamana 5, marti
+
+In plus, pentru a evita conflictele pe liniile SDA si SCL, am utilizat intrari open-drain specifice I2C. Astfel, placa nu impune niciodata nivelul logic 1 pe magistrala. Atunci cand se transmite un nivel logic 0, linia este trasa la masa ( 0 ), iar pentru nivelul logic 1, iesirea este trecuta in starea de inalta impedanta (1'bz) si se elibereaza linia. In protocolul I2C, nivelul de logic 1 este obtinut prin rezistentele de pull-up ce mentin SDA si SCL la nivel de 1 logic cand nu au de efectuat o comanda sau niciun slave nu le impune sa treaca la nivel logic 0. Datorita acestui lucru este permis o arhitectura multi slave cu un singur master.
+
+
+
+Pentru modulul i2c_master am realizat o simulare totala a receptiei si transmiterii datelor prin intermediul i2c. In cadrul testbench-ului am simultat si rezistente de pull-up pentru a reproduce functionarea in totalitate a protocolului.
+
+<img width="1316" height="778" alt="image" src="https://github.com/user-attachments/assets/36f93f68-e263-400a-8eb7-cbd8eebe54c6" />
 
