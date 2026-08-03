@@ -84,7 +84,31 @@ In imaginea atasata sunt prezentate operatia de citire a datelor de la senzor, i
 
 In a 2-a tranzactie, masterul retransmite adresa slave-ului impreuna cu bitul de citire READ. Dupa confirmare, incepe transmiterea datelor: primul octet transmis este MSB-ul, impreuna cu ACK dupa ce masterul receptioneaza, apoi LSB-ul urmat de semnalul NACK ce indica faptul ca masterul nu mai solicita alte date de la senzor. Comunicatia este ulterior incheiata prin STOP, iar cei 2 octeti sunt concatenati pentru obtinerea valorii complete a temperaturii.
 
+### Saptamana 6, luni
 
+Am adaptat codul pentru i2c_master, eliminand simularea rezistentelor de pullup. Acum in momentul in care SDA-ul se doreste a fi liber, se trece direct in nivelul logic 1. 
 
+Acest lucru a fost posibil prin utilizarea a 2 semnale : sda_in ( valoarea citita de master ) si sda_out ( valoarea transmisa de master ). I2C utilizeaza o arhitectura tip open-drain in care dispozitivele conectate nu transmit direct nivelul activ logic 1, ele pot doar sa forteze logic 0. Datorita acestui lucru a fost initial nevoie de rezistente de pullup ce simulau trecerea in 1, ulterior aceasta metoda dovedindu-se a fi invalida din punct de vedere al implementarii pe placa.
+
+Pe langa aceasta modificare, codul masterului a fost optimizat prin introducerea unor faze pentru transferul bitilor. Fiecare operatie de scriere sau citire este impartita in 4 faze:
+
+- PHASE0 - pregatirea valorii pe SDA in timp ce SCL e 0
+- PHASE1 - ridicarea SCL
+- PHASE2 - mentinerea nivelului logic 1 pentru transmiterea datelor
+- PHASE3 - oborarea semnalului SCL inainte de trecerea la urmatorul bit
+
+Prin utilizarea fazelor, FSM-ul a fost simplificat, reducandu-se nivelul starilor la 7 stari principale : IDLE, START, WRITE, READ, ACK, STOP, DONE. Fiecare stare utilizeaza aceeasi succesiune de 4 faze in care se observa mai clar functionalitatea.
+
+In testbench am simulat transmiterea si receptionarea unor octeti. Masterul transmite un octet catre slave, iar acesta raspunde prin ACK. La citire, slave-ul transmite succesiv octetul si masterul memoreaza in registrul rx. La final, masterul trimite ACK sau NACK, in functie de semnalul de control.
+
+Această relație reproduce comportamentul dominant al nivelului logic 0 specific magistralei I²C. Dacă masterul sau dispozitivul slave aplică nivelul logic 0, valoarea observată pe magistrală devine 0. Linia va avea nivelul logic 1 numai atunci când atât sda_out, cât și slave_out sunt egale cu 1.
+
+Am decis sa reproduc comportamentul specific I2C fara rezistentele de pullup simulate. Astfel, daca masterul sau dispozitivul slave sunt 0, valoarea pe bus devine 0. Linia v-a fi 1 atunci cand sda_out si slave_out sunt 1 ( sda_in = sda_out & slave_out ).
+
+### Simularea master-ului
+
+In formele de unda se pot observa conditiile de START si STOP, octetul transmis sau receptionat, ACK sau NACK, precum si evolutia starilor si a fazelor, scl_out, sda_out sau chiar bit_count. 
+
+<img width="1423" height="780" alt="image" src="https://github.com/user-attachments/assets/ab0645b5-5105-4d5a-8540-1bf15716cc0e" />
 
 
