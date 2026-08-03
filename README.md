@@ -84,6 +84,10 @@ In imaginea atasata sunt prezentate operatia de citire a datelor de la senzor, i
 
 In a 2-a tranzactie, masterul retransmite adresa slave-ului impreuna cu bitul de citire READ. Dupa confirmare, incepe transmiterea datelor: primul octet transmis este MSB-ul, impreuna cu ACK dupa ce masterul receptioneaza, apoi LSB-ul urmat de semnalul NACK ce indica faptul ca masterul nu mai solicita alte date de la senzor. Comunicatia este ulterior incheiata prin STOP, iar cei 2 octeti sunt concatenati pentru obtinerea valorii complete a temperaturii.
 
+
+
+
+
 ### Saptamana 6, luni
 
 Am adaptat codul pentru i2c_master, eliminand simularea rezistentelor de pullup. Acum in momentul in care SDA-ul se doreste a fi liber, se trece direct in nivelul logic 1. 
