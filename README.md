@@ -116,3 +116,34 @@ In formele de unda se pot observa conditiile de START si STOP, octetul transmis 
 <img width="1423" height="780" alt="image" src="https://github.com/user-attachments/assets/ab0645b5-5105-4d5a-8540-1bf15716cc0e" />
 
 
+### -- Saptamana 6, marti --
+
+In continuare, pentru a putea afisa pe ecranul cu 7 segmente valoarea temperaturii masurate de senzor, sunt necesare inca 2 module importante:
+
+- temp_controller - modul ce controleaza comunicatia dintre placa si senzor prin I2C, citeste si transmite date despre temperatura
+  
+- temp_converter - transforma datele primite de la senzor in temperatura propriuzisa, scrisa in grade Celsius
+
+Pentru modulul de control al temperaturii, implementarea a fost realizata cu un FSM ce coordoneaza intreaga secventa de comunicatie I2C. La pornire, controller-ul asteapta un interval pentru a putea citi prima valoare ( FIRST_READY_DELAY ), necesar pentru conversia temperaturii. Ulterior, citirile sunt realizate periodic, la un interval READ_INTERVAL, ales acum 240 ms, corespunzator perioadei tipice de actualizare a temperaturii de catre senzorul ADT7420.
+
+In cadrul fiecarei secvente de citire, controllerul transmite catre modului i2c_master comenzile necesare pentru generarea conditiei de START, REPEATED_START si STOP, pentru selectarea registrului de temperatura si pentru citirea succesiva a celor 16 biti ce compun valoarea temperaturii. La final, cei 16 biti ( temperature_raw ) sunt transmisi catre temp_converter pentru a fi convertiti in grade celsius.
+
+In modulul de conversie se aplica urmatoarele formule :
+
+- "temperature_count = temperature_raw >> 3" - valoarea temperaturii este reprezentata in primii 13 biti, de aceea valoarea "raw" se shifteaza la dreapta cu 3 rezultand temperatura exprimata in 1/16 unitati
+ 
+- "temp_celsius = temperature_count >> 4" - shiftarea cu 4 la dreapta este echivalenta cu impartirea la 16, obtinandu-se astfel partea intreaga a valorii in grade C
+  
+- "temp_fraction = (temperature_count[3:0] * 10) >> 4" - cei 4 biti inferiori reprezinta fractia temperaturii in saisprezecimi de grad celsius. Pentru a afisa o singura zecimala, fractia este inmultita cu 10 si deplasata la dreapta cu 4 pozitii ( impartita la 16 )
+
+
+
+
+
+
+
+
+
+
+
+
