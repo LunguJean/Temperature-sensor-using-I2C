@@ -160,11 +160,22 @@ In modulul de conversie se aplica urmatoarele formule :
 
 ### -- Saptamana 6, miercuri --
 
+Pentru a putea afisa pe ecranul cu 7 segmente, au fost necesare implementarea urmatoarelor module:
+- b2d - transforma temperatura convertita in cifre individuale, valoarea fiind impartita in numarul intreg si numarul fractionar
+- refresh - genereaza semnalul de multiplexare al afisajului prin incrementarea unui contor sincronizat cu semnalul de ceas, iar in functie de sel sunt selectate cifrele
+- mux - selecteaza cifra care trebuie afisara in functie de semnalul sel generat
+- seg_dec - decodeaza cifra sau caracterul si genereaza combinatia celor 7 segmente
+- anode_selector - activeaza succesif anodul corespunzator fiecarui afisaj in functie de sel
 
+In plus, pentru a putea functiona in regim normal a proiectului, a fost totusi necesara implementarii unui buffer bidirectionar in-and-out ( IOBUF ), care realizeaza interfata dintre semnalul SDA bidirectional si semnalele sda_in si sda_out. Acest lucru a fost necesar din cauza ca interfata fizica a placii dispune de un singur pin dedicat SDA-ului, atat pentru receptie cat si pentru transmisie.
 
+IOBUF primeste la intrare sda_out ( valoare ce masterul vrea sa o transmita ) si transmite sda_in ( valoarea logica pe SDA la receptie ). Directia de functionare este controlata de semnalul T ( tri_state ) care este generat direct din sda_out, realizandu-se controlul automat al directiilor de transfer. Spre exemplu, cand masterul trebuie sa transmita nivel logic 0, bufferul activeaza iesirea si duce SDA la nivelul corespunzator, iar atunci cand magistrala trebuie eliberata, bufferul dezactiveaza iesirea si trece pin-ul in starea Z ( impedanta ridicata ), permitand rezistentei de pull-up existente pe FPGA sa aduca linia la logic 1 automat. Toata aceasta simulare reproduce functionarea de tip open-drain.
 
+Surse: https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/IN_FIFO
 
+       https://github.com/YosysHQ/apicula/wiki/IOBUF
 
+       
 
 
 
