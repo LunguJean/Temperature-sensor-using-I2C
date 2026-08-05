@@ -127,25 +127,25 @@ In continuare, pentru a putea afisa pe ecranul cu 7 segmente valoarea temperatur
 Pentru modulul de control al temperaturii, implementarea a fost realizata cu un FSM ce coordoneaza intreaga secventa de comunicatie I2C. La pornire, controller-ul asteapta un interval pentru a putea citi prima valoare ( FIRST_READY_DELAY ), necesar pentru conversia temperaturii. Ulterior, citirile sunt realizate periodic, la un interval READ_INTERVAL, ales acum 240 ms, corespunzator perioadei tipice de actualizare a temperaturii de catre senzorul ADT7420.
 
 FSM-ul controllerului cuprinde starile:
-IDLE – starea de repaus, in care se asteapta prima citire sau trecerea la urmatoarea citire
-SEND_START_WRITE – transmite masterului conditia de START a primei citiri
-WAIT_START_WRITE – asteapta confirmarea finalizarii conditiei de start
-SEND_ADDRESS_WRITE – transmite adresa senzorului impreuna cu bitul de scriere ( 0x96 )
-WAIT_ADDRESS_WRITE – asteapta finalizarea transmiterii adresei si asteapta ACK
-SEND_REGISTER_ADDRESS – transmite adresa registrului de temperatura
-WAIT_REGISTER_ADDRESS – asteapta confirmarea 
-SEND_REPEATED_START – genereaza o conditie de a repeta pornirea, fara eliberarea magistralei
-WAIT_REPEATED_START – asteapta finalizarea conditiei
-SEND_ADDRESS_READ – transmite adresa si bitul de citire ( 0x97 )
-WAIT_ADDRESS_READ – asteapta finalizarea si verifica ACK
-SEND_READ_MSB – citeste primul octet, iar dupa receptie, masterul trimite ACK
-WAIT_READ_MSB – asteapta terminarea si memoreaza in MSB
-SEND_READ_LSB – comanda citirea LSB, dupa terminare trimite ACK
-WAIT_READ_LSB – asteapta terminarea citirii si memoreaza LSB
-SEND_STOP – transmite catre master conditia de STOP
-WAIT_STOP – asteapta terminarea si verifica ACK sau NACK
-SAVE_RESULT – concateneaza MSB si LSB si formeaza cei 16 biti de date, data_valid indica faptul ca se asteapta o noua valoare
-WAIT_NEXT_READ – reseteaza contorul de asteptare si se pregateste pt o noua citire
+- IDLE – starea de repaus, in care se asteapta prima citire sau trecerea la urmatoarea citire
+- SEND_START_WRITE – transmite masterului conditia de START a primei citiri
+- WAIT_START_WRITE – asteapta confirmarea finalizarii conditiei de start
+- SEND_ADDRESS_WRITE – transmite adresa senzorului impreuna cu bitul de scriere ( 0x96 )
+- WAIT_ADDRESS_WRITE – asteapta finalizarea transmiterii adresei si asteapta ACK
+- SEND_REGISTER_ADDRESS – transmite adresa registrului de temperatura
+- WAIT_REGISTER_ADDRESS – asteapta confirmarea 
+- SEND_REPEATED_START – genereaza o conditie de a repeta pornirea, fara eliberarea magistralei
+- WAIT_REPEATED_START – asteapta finalizarea conditiei
+- SEND_ADDRESS_READ – transmite adresa si bitul de citire ( 0x97 )
+- WAIT_ADDRESS_READ – asteapta finalizarea si verifica ACK
+- SEND_READ_MSB – citeste primul octet, iar dupa receptie, masterul trimite ACK
+- WAIT_READ_MSB – asteapta terminarea si memoreaza in MSB
+- SEND_READ_LSB – comanda citirea LSB, dupa terminare trimite ACK
+- WAIT_READ_LSB – asteapta terminarea citirii si memoreaza LSB
+- SEND_STOP – transmite catre master conditia de STOP
+- WAIT_STOP – asteapta terminarea si verifica ACK sau NACK
+- SAVE_RESULT – concateneaza MSB si LSB si formeaza cei 16 biti de date, data_valid indica faptul ca se asteapta o noua valoare
+- WAIT_NEXT_READ – reseteaza contorul de asteptare si se pregateste pt o noua citire
 
 
 In cadrul fiecarei secvente de citire, controllerul transmite catre modului i2c_master comenzile necesare pentru generarea conditiei de START, REPEATED_START si STOP, pentru selectarea registrului de temperatura si pentru citirea succesiva a celor 16 biti ce compun valoarea temperaturii. La final, cei 16 biti ( temperature_raw ) sunt transmisi catre temp_converter pentru a fi convertiti in grade celsius.
