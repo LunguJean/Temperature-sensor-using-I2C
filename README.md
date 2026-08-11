@@ -177,7 +177,18 @@ Surse: https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/IN_FIFO
 
        https://github.com/YosysHQ/apicula/wiki/IOBUF
 
-       
+### -- Saptamana 7, luni --    
+
+In continuare, pentru finalizarea ultimelor modificari in vederea creearii proiectului final, a fost necesara adaugarea comenzii pentru temperatura in terminalul UART. Astfel, am introdus comanda "T/t" care afiseaza temperatura masurata de senzor.
+
+La receptionarea comenzii prin UART, mlodulul de control al comenzilor identifica valoarea ASCII a caracterului si genereaza un semnal nou, cmd_temp. Acesta este transmis mai departe catre controller-ul principal , iar mai apoi in modulul message in care se constuieste mesajul de tipul :
+
+- TEMP : xx.xC, unde x reprezinta valoarea transmisa de senzor
+
+Cifrele sunt transformate in coduri ASCII prin adaugarea 0x30 fiecarei valori, fractionare sau intregi.
+
+Pentru a putea usura citirea, am decis ca in momentul introducerii comenzii pentru temperatura cmd_temp sa utilizeze ultima valoarea primita de la senzorul de temperatura. Acest lucru este esential deoarece modulul temp_controller citeste periodic senzorul , rezultanda ca temperatura nu este citita direct in momentul in care este introdusa comanda specifica.
+
 
 
 
