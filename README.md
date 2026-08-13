@@ -190,6 +190,23 @@ Cifrele sunt transformate in coduri ASCII prin adaugarea 0x30 fiecarei valori, f
 Pentru a putea usura citirea, am decis ca in momentul introducerii comenzii pentru temperatura cmd_temp sa utilizeze ultima valoarea primita de la senzorul de temperatura. Acest lucru este esential deoarece modulul temp_controller citeste periodic senzorul , rezultanda ca temperatura nu este citita direct in momentul in care este introdusa comanda specifica.
 
 
+### -- Saptamana 7, joi --
 
+Pentru a putea simula functionalitatea masterului, am implementat un modul ce simuleaza comportamentul unui slave. Modulul i2c_dummy_slave raspunde la comenzile generate de i2c_master pentru a putea observa scrierea,citirea si confirmarea datelor.
+
+Slave-ul este compus dintr-un FSM care simuleaza receptia si transmisia datelor, interpretarea bitilor de ACK sau NACk, precum si detectarea conditiilor de START/STOP, avand urmatoarele stari: 
+
+- START - se urmareste aparitia conditiei de START
+- RX - receptia octetilor transmisi de master
+- ACK - initierea bitului de confirmare
+- ACK_END - finalizare transmiterii bitului de ACK
+- REPEATED_START - o noua conditie de start pentru a relua citirea sau scrierea
+- TX - transmisia octetilor catre master
+- NACK - transmiterea secventei de not acknowledge
+- STOP - starea finala a tranzactiei
+
+Prin acest mod, i2c_dummy_slave permite verificarea in cadrul simularii a intregului flux de comunicatie I2C. Astfel, se poate urmari prin intermediul simularii datele transmise si returnate de catre slave, semnalele ACK/NACK si conditiile de START si STOP.
+
+<img width="1759" height="806" alt="image" src="https://github.com/user-attachments/assets/daa16ec2-630e-43f1-8ff5-6d6290d42d10" />
 
 
