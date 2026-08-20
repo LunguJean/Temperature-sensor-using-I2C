@@ -209,4 +209,15 @@ Prin acest mod, i2c_dummy_slave permite verificarea in cadrul simularii a intreg
 
 <img width="1759" height="806" alt="image" src="https://github.com/user-attachments/assets/daa16ec2-630e-43f1-8ff5-6d6290d42d10" />
 
+### Saptamana 8 
+
+In continuare am modificat modulele FSM_contor, binary_to_decimal, command, controller, message, mux, seg_decodor, refresh si anode_selector pentru a putea finaliza proiectul si pentru a integra toate functionalitatile studiate.
+
+Modulul FSM_contor a fost adaptat astfel incat contorul sa utilizeze 14 biti, dar sa fie limitat la valoarea de 9999 . Aceasta valoare a fost aleasa deoarece valoarea contorului trebuie afisata pe cele 4 cifre din partea dreapta a display-ului. De asemenea, binary_to_decimal a fost modificat pentru a realiza conversia valorii contorului.
+
+In modulul command am adaugat o noua comanda , T/t ce permite afisarea valorii temperaturii prin intermediul comunicatiei UART. De asemenea , controller-ul a fost modificat prin introducerea unui nou eveniment asociat temperaturii pentru a putea activa semnalul message_temp.
+
+Modulul message a fost completat pentru a receptiona valorile temperaturii si pentru a genera mesajul corespunzator de forma TEMP : xx.xC. Astfel este permisa afisarea valorii in terminalul PuTTY.
+
+Sistemul de afisare pe 7 segmente a fost structurat pentru afisarea corecta a temperaturii pe cele 4 cifre din stanga si respectiv a valorii counterului in partea dreapta 
 
